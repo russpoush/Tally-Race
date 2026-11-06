@@ -2,7 +2,7 @@
 
 A sports stats game for any age. Pick the player you think has the bigger career number, then watch them race: each racer travels exactly as far as his real career total from Sports Reference.
 
-**The game adapts to you.** Level 1 is two racers with a big gap, and one is always a legend. Each win makes the next race closer and adds racers. At the top levels you call the full podium. A miss makes the next race easier. A season is 10 races.
+**The game adapts to you.** Level 1 is two racers with a big gap, and one is always a legend. Each win makes the next race closer and adds racers. At the top levels you call the full podium. A miss makes the next race easier. Seasons are 15 or 20 races (your choice). In Mix, every 4 races cover all 4 sports, and each sport alternates its two stats.
 
 **Pick a sport:** Baseball (home runs, hits), Basketball (points, rebounds), Football (passing and rushing yards), Hockey (goals, points), or Mix.
 

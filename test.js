@@ -31,3 +31,22 @@ rt = 6; rt = E.updateRating(rt,false,0); ok(E.levelOf(rt)===5,'miss drops a leve
 console.log('relaxed-spec counts (out of 200):', JSON.stringify(relaxed));
 console.log(fails ? fails+' FAILURES' : 'ALL TESTS PASSED');
 const r1 = E.updateRating(1.2, true, 1); if (E.levelOf(r1) !== 2) { console.log('FAIL first win should level up'); process.exitCode = 1; } else console.log('first win -> level 2: ok');
+// Mix rotation: every 4 races cover all 4 sports; every season covers all 8 stats
+for (let trial = 0; trial < 300; trial++) {
+  for (const len of E.SEASON_LENGTHS) {
+    const deck = E.makeDeck(BOARDS, 'mix', rnd); const sports = [], ids = new Set();
+    let rating = 1.2, streak = 0;
+    for (let i = 0; i < len; i++) {
+      const b = E.dealBoard(deck);
+      const race = E.makeRace(BOARDS, 'mix', E.levelOf(rating), rnd, new Set(), b.id);
+      if (race.board.sport !== b.sport) { console.log('FAIL race left its dealt sport'); process.exitCode = 1; }
+      sports.push(race.board.sport); ids.add(race.board.id);
+      const won = rnd() < 0.6; streak = won ? streak + 1 : 0; rating = E.updateRating(rating, won, streak);
+    }
+    for (let k = 0; k + 4 <= len; k += 4) if (new Set(sports.slice(k, k + 4)).size !== 4) { console.log('FAIL mix block missing a sport', sports.slice(k,k+4)); process.exitCode = 1; }
+  }
+  const d2 = E.makeDeck(BOARDS, 'baseball', rnd); const seen = new Set();
+  for (let i = 0; i < 4; i++) seen.add(E.dealBoard(d2).id);
+  if (seen.size !== 2) { console.log('FAIL single sport should alternate stats'); process.exitCode = 1; }
+}
+console.log(process.exitCode ? 'ROTATION TESTS FAILED' : 'mix rotation + stat alternation: ok');

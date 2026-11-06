@@ -39,6 +39,9 @@
   .sport small{font-weight:500;font-size:14px;opacity:.7}
   .sport.mix{grid-column:span 2;background:linear-gradient(90deg,#ffe08a,#ffb3b3,#b9a8ff)}
   .best{font-size:13px;font-weight:700;color:var(--grape)}
+  .lenpick{display:flex;justify-content:center;align-items:center;gap:8px;font-weight:800;font-size:18px;margin-top:14px}
+  .lenpick button{border:0;border-radius:999px;padding:6px 16px;font-size:18px;font-weight:800;background:var(--card);box-shadow:0 3px 0 rgba(0,0,0,.15);cursor:pointer}
+  .lenpick button.on{background:var(--ink);color:#fff}
   .how{background:var(--card);border-radius:18px;padding:12px 16px;box-shadow:var(--shadow);font-size:17px}
   .how b{color:var(--pop)}
 
@@ -143,11 +146,12 @@
       <h1>Pick who wins.<br>Watch the stats race!</h1>
       <p>Real numbers from Sports Reference. Each racer runs as far as his real career total.</p>
     </div>
+    <div class="lenpick" id="lenpick"><span>Season:</span></div>
     <div class="sports" id="sports"></div>
     <div class="how">
       <b>How to play:</b> Tap the player you think has the bigger number, then cheer! Never heard of them? Just guess, you'll learn as they race.
       Win and the races get <b>closer</b>, with <b>more racers</b>, until you're calling the whole podium.
-      Miss one and the next race gets easier. 10 races in a season.
+      Miss one and the next race gets easier. Choose a 15- or 20-race season. In Mix, every sport takes a turn.
     </div>
   </section>
 
@@ -235,10 +239,20 @@
 
   // ---------- state ----------
   let S = null;
+  let seasonLen = SEASON_LENGTHS.includes(store.get("len", SEASON_LENGTH)) ? store.get("len", SEASON_LENGTH) : SEASON_LENGTH;
   const fmt = n => n.toLocaleString("en-US");
   function show(id) { ["home", "game", "end"].forEach(s => $(s).classList.toggle("hidden", s !== id)); scrollTo(0, 0); }
 
+  function renderLen() {
+    const el = $("lenpick"); el.querySelectorAll("button").forEach(b => b.remove());
+    SEASON_LENGTHS.forEach(n => {
+      const b = document.createElement("button"); b.textContent = n + " races"; b.className = n === seasonLen ? "on" : "";
+      b.onclick = () => { seasonLen = n; store.set("len", n); tone(700); renderLen(); };
+      el.appendChild(b);
+    });
+  }
   function renderHome() {
+    renderLen();
     const el = $("sports"); el.innerHTML = "";
     ["baseball", "basketball", "football", "hockey", "mix"].forEach(s => {
       const best = store.get("best." + s, 0);
@@ -253,13 +267,13 @@
   }
 
   function start(sport) {
-    S = { sport, rating: 1.2, streak: 0, raceNo: 0, wins: 0, stars: 0, peak: 1, recent: [] };
+    S = { sport, len: seasonLen, deck: makeDeck(BOARDS, sport), rating: 1.2, streak: 0, raceNo: 0, wins: 0, stars: 0, peak: 1, recent: [] };
     nextRace();
   }
 
   function renderHud() {
     const L = levelOf(S.rating);
-    $("race-n").textContent = `Race ${S.raceNo} of ${SEASON_LENGTH}`;
+    $("race-n").textContent = `Race ${S.raceNo} of ${S.len}`;
     $("lvl-chip").textContent = `Level ${L} · ${LEVELS[L].name}`;
     $("stars").textContent = `⭐ ${S.stars}`;
     $("streak").classList.toggle("hidden", S.streak < 2);
@@ -270,9 +284,9 @@
 
   function nextRace() {
     S.raceNo++;
-    if (S.raceNo > SEASON_LENGTH) return endSeason();
+    if (S.raceNo > S.len) return endSeason();
     const L = levelOf(S.rating);
-    const race = makeRace(BOARDS, S.sport, L, Math.random, new Set(S.recent));
+    const race = makeRace(BOARDS, S.sport, L, Math.random, new Set(S.recent), dealBoard(S.deck).id);
     race.racers.forEach(r => { S.recent.push(r.name); });
     S.recent = S.recent.slice(-12);
     S.race = race; S.pick = race.spec.podium ? [] : null;
@@ -387,7 +401,7 @@
     const move = L1 > L0 ? `<span class="move up">⬆ Level up! Level ${L1} · ${LEVELS[L1].name}</span>`
       : L1 < L0 ? `<span class="move down">⬇ Next race is a little easier</span>`
       : `<span class="move same">Next race: Level ${L1} · ${LEVELS[L1].name}</span>`;
-    const last = S.raceNo >= SEASON_LENGTH;
+    const last = S.raceNo >= S.len;
     const res = $("result");
     res.innerHTML = `<h2>${won ? "🎉 " : "😮 "}${head}</h2>${won ? `<div class="line">+${L0} ⭐</div>` : ""}
       <div class="line">${detail}</div>${move}<br>
@@ -409,7 +423,7 @@
     $("end").innerHTML = `<div class="trophy popin">${trophy}</div>
       <h2>Season over!</h2>
       <div style="font-size:20px">You reached <b>Level ${S.peak} · ${LEVELS[S.peak].name}</b>${S.peak > prev ? " (a new best!)" : ""}</div>
-      <div class="stats"><div class="stat"><b>${S.wins}/${SEASON_LENGTH}</b>races won</div>
+      <div class="stats"><div class="stat"><b>${S.wins}/${S.len}</b>races won</div>
         <div class="stat"><b>⭐ ${S.stars}</b>stars</div><div class="stat"><b>${L}</b>finishing level</div></div>
       <div class="row"><button class="btn go" id="again">Play again</button><button class="btn alt" id="other">Pick a sport</button></div>`;
     show("end");

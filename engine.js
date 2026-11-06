@@ -13,7 +13,8 @@ const LEVELS = {
   9:  { racers: 3, minGap: 0.0005, maxGap: 0.08, legend: false, podium: true,  name: "Hall of Famer" },
   10: { racers: 4, minGap: 0.0005, maxGap: 0.06, legend: false, podium: true,  name: "G.O.A.T." }
 };
-const SEASON_LENGTH = 10;
+const SEASON_LENGTHS = [15, 20];          // player chooses; 15 is the default
+const SEASON_LENGTH = 15;
 const SPORTS = ["baseball", "basketball", "football", "hockey"];
 
 function levelOf(rating) { return Math.max(1, Math.min(10, Math.floor(rating))); }
@@ -46,8 +47,30 @@ function valid(racers, spec) {
 }
 
 // Build one race for a sport ("mix" = any) at a level. Avoid recently used players.
-function makeRace(boards, sport, level, rnd = Math.random, recent = new Set()) {
-  const pool = boards.filter(b => sport === "mix" || b.sport === sport);
+// A "deck" deals the next stat board so every sport (in Mix) and every stat takes turns.
+// Mix: each round of 4 races covers all 4 sports in a shuffled order.
+function makeDeck(boards, sport, rnd = Math.random) {
+  return { boards, sport, rnd, queue: [], used: {} };
+}
+function dealBoard(deck) {
+  if (!deck.queue.length) {
+    const sports = deck.sport === "mix" ? shuffle(SPORTS.slice(), deck.rnd) : [deck.sport];
+    deck.queue = sports;
+  }
+  const sp = deck.queue.shift();
+  const opts = deck.boards.filter(b => b.sport === sp);
+  const n = deck.used[sp] || 0; deck.used[sp] = n + 1;
+  // alternate the sport's stats, starting from a random one
+  if (n === 0) deck.offset = deck.offset || {}, deck.offset[sp] = Math.floor(deck.rnd() * opts.length);
+  return opts[(n + deck.offset[sp]) % opts.length];
+}
+
+// Build one race. With preferId, that board is tried first; if it can't make a fair race
+// at this level, another board from the SAME sport is used (never a different sport).
+function makeRace(boards, sport, level, rnd = Math.random, recent = new Set(), preferId = null) {
+  const pref = preferId && boards.find(b => b.id === preferId);
+  const sp = pref ? pref.sport : sport;
+  const pool = boards.filter(b => sp === "mix" || b.sport === sp);
   const base = LEVELS[level];
   // Try the exact spec first; widen gently if a board can't satisfy it.
   for (let relax = 0; relax < 4; relax++) {
@@ -56,7 +79,7 @@ function makeRace(boards, sport, level, rnd = Math.random, recent = new Set()) {
       maxGap: Math.min(1, base.maxGap * Math.pow(1.6, relax))
     });
     for (let tries = 0; tries < 600; tries++) {
-      const board = pool[Math.floor(rnd() * pool.length)];
+      const board = pref && tries < 400 ? pref : pool[Math.floor(rnd() * pool.length)];
       const avail = board.players.filter(p => !recent.has(p[0]));
       const src = avail.length >= spec.racers + 4 ? avail : board.players;
       let racers;
@@ -82,4 +105,4 @@ function judge(race, pick) {
   return pick === race.order[0];
 }
 
-if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SPORTS, levelOf, updateRating, makeRace, judge, valid };
+if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SEASON_LENGTHS, SPORTS, makeDeck, dealBoard, levelOf, updateRating, makeRace, judge, valid };

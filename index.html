@@ -39,6 +39,9 @@
   .sport small{font-weight:500;font-size:14px;opacity:.7}
   .sport.mix{grid-column:span 2;background:linear-gradient(90deg,#ffe08a,#ffb3b3,#b9a8ff)}
   .best{font-size:13px;font-weight:700;color:var(--grape)}
+  .lenpick{display:flex;justify-content:center;align-items:center;gap:8px;font-weight:800;font-size:18px;margin-top:14px}
+  .lenpick button{border:0;border-radius:999px;padding:6px 16px;font-size:18px;font-weight:800;background:var(--card);box-shadow:0 3px 0 rgba(0,0,0,.15);cursor:pointer}
+  .lenpick button.on{background:var(--ink);color:#fff}
   .how{background:var(--card);border-radius:18px;padding:12px 16px;box-shadow:var(--shadow);font-size:17px}
   .how b{color:var(--pop)}
 
@@ -143,11 +146,12 @@
       <h1>Pick who wins.<br>Watch the stats race!</h1>
       <p>Real numbers from Sports Reference. Each racer runs as far as his real career total.</p>
     </div>
+    <div class="lenpick" id="lenpick"><span>Season:</span></div>
     <div class="sports" id="sports"></div>
     <div class="how">
       <b>How to play:</b> Tap the player you think has the bigger number, then cheer! Never heard of them? Just guess, you'll learn as they race.
       Win and the races get <b>closer</b>, with <b>more racers</b>, until you're calling the whole podium.
-      Miss one and the next race gets easier. 10 races in a season.
+      Miss one and the next race gets easier. Choose a 15- or 20-race season. In Mix, every sport takes a turn.
     </div>
   </section>
 
@@ -337,7 +341,8 @@ const LEVELS = {
   9:  { racers: 3, minGap: 0.0005, maxGap: 0.08, legend: false, podium: true,  name: "Hall of Famer" },
   10: { racers: 4, minGap: 0.0005, maxGap: 0.06, legend: false, podium: true,  name: "G.O.A.T." }
 };
-const SEASON_LENGTH = 10;
+const SEASON_LENGTHS = [15, 20];          // player chooses; 15 is the default
+const SEASON_LENGTH = 15;
 const SPORTS = ["baseball", "basketball", "football", "hockey"];
 
 function levelOf(rating) { return Math.max(1, Math.min(10, Math.floor(rating))); }
@@ -370,8 +375,30 @@ function valid(racers, spec) {
 }
 
 // Build one race for a sport ("mix" = any) at a level. Avoid recently used players.
-function makeRace(boards, sport, level, rnd = Math.random, recent = new Set()) {
-  const pool = boards.filter(b => sport === "mix" || b.sport === sport);
+// A "deck" deals the next stat board so every sport (in Mix) and every stat takes turns.
+// Mix: each round of 4 races covers all 4 sports in a shuffled order.
+function makeDeck(boards, sport, rnd = Math.random) {
+  return { boards, sport, rnd, queue: [], used: {} };
+}
+function dealBoard(deck) {
+  if (!deck.queue.length) {
+    const sports = deck.sport === "mix" ? shuffle(SPORTS.slice(), deck.rnd) : [deck.sport];
+    deck.queue = sports;
+  }
+  const sp = deck.queue.shift();
+  const opts = deck.boards.filter(b => b.sport === sp);
+  const n = deck.used[sp] || 0; deck.used[sp] = n + 1;
+  // alternate the sport's stats, starting from a random one
+  if (n === 0) deck.offset = deck.offset || {}, deck.offset[sp] = Math.floor(deck.rnd() * opts.length);
+  return opts[(n + deck.offset[sp]) % opts.length];
+}
+
+// Build one race. With preferId, that board is tried first; if it can't make a fair race
+// at this level, another board from the SAME sport is used (never a different sport).
+function makeRace(boards, sport, level, rnd = Math.random, recent = new Set(), preferId = null) {
+  const pref = preferId && boards.find(b => b.id === preferId);
+  const sp = pref ? pref.sport : sport;
+  const pool = boards.filter(b => sp === "mix" || b.sport === sp);
   const base = LEVELS[level];
   // Try the exact spec first; widen gently if a board can't satisfy it.
   for (let relax = 0; relax < 4; relax++) {
@@ -380,7 +407,7 @@ function makeRace(boards, sport, level, rnd = Math.random, recent = new Set()) {
       maxGap: Math.min(1, base.maxGap * Math.pow(1.6, relax))
     });
     for (let tries = 0; tries < 600; tries++) {
-      const board = pool[Math.floor(rnd() * pool.length)];
+      const board = pref && tries < 400 ? pref : pool[Math.floor(rnd() * pool.length)];
       const avail = board.players.filter(p => !recent.has(p[0]));
       const src = avail.length >= spec.racers + 4 ? avail : board.players;
       let racers;
@@ -406,7 +433,7 @@ function judge(race, pick) {
   return pick === race.order[0];
 }
 
-if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SPORTS, levelOf, updateRating, makeRace, judge, valid };
+if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SEASON_LENGTHS, SPORTS, makeDeck, dealBoard, levelOf, updateRating, makeRace, judge, valid };
 
 </script>
 <script>
@@ -466,10 +493,20 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SPO
 
   // ---------- state ----------
   let S = null;
+  let seasonLen = SEASON_LENGTHS.includes(store.get("len", SEASON_LENGTH)) ? store.get("len", SEASON_LENGTH) : SEASON_LENGTH;
   const fmt = n => n.toLocaleString("en-US");
   function show(id) { ["home", "game", "end"].forEach(s => $(s).classList.toggle("hidden", s !== id)); scrollTo(0, 0); }
 
+  function renderLen() {
+    const el = $("lenpick"); el.querySelectorAll("button").forEach(b => b.remove());
+    SEASON_LENGTHS.forEach(n => {
+      const b = document.createElement("button"); b.textContent = n + " races"; b.className = n === seasonLen ? "on" : "";
+      b.onclick = () => { seasonLen = n; store.set("len", n); tone(700); renderLen(); };
+      el.appendChild(b);
+    });
+  }
   function renderHome() {
+    renderLen();
     const el = $("sports"); el.innerHTML = "";
     ["baseball", "basketball", "football", "hockey", "mix"].forEach(s => {
       const best = store.get("best." + s, 0);
@@ -484,13 +521,13 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SPO
   }
 
   function start(sport) {
-    S = { sport, rating: 1.2, streak: 0, raceNo: 0, wins: 0, stars: 0, peak: 1, recent: [] };
+    S = { sport, len: seasonLen, deck: makeDeck(BOARDS, sport), rating: 1.2, streak: 0, raceNo: 0, wins: 0, stars: 0, peak: 1, recent: [] };
     nextRace();
   }
 
   function renderHud() {
     const L = levelOf(S.rating);
-    $("race-n").textContent = `Race ${S.raceNo} of ${SEASON_LENGTH}`;
+    $("race-n").textContent = `Race ${S.raceNo} of ${S.len}`;
     $("lvl-chip").textContent = `Level ${L} · ${LEVELS[L].name}`;
     $("stars").textContent = `⭐ ${S.stars}`;
     $("streak").classList.toggle("hidden", S.streak < 2);
@@ -501,9 +538,9 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SPO
 
   function nextRace() {
     S.raceNo++;
-    if (S.raceNo > SEASON_LENGTH) return endSeason();
+    if (S.raceNo > S.len) return endSeason();
     const L = levelOf(S.rating);
-    const race = makeRace(BOARDS, S.sport, L, Math.random, new Set(S.recent));
+    const race = makeRace(BOARDS, S.sport, L, Math.random, new Set(S.recent), dealBoard(S.deck).id);
     race.racers.forEach(r => { S.recent.push(r.name); });
     S.recent = S.recent.slice(-12);
     S.race = race; S.pick = race.spec.podium ? [] : null;
@@ -618,7 +655,7 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SPO
     const move = L1 > L0 ? `<span class="move up">⬆ Level up! Level ${L1} · ${LEVELS[L1].name}</span>`
       : L1 < L0 ? `<span class="move down">⬇ Next race is a little easier</span>`
       : `<span class="move same">Next race: Level ${L1} · ${LEVELS[L1].name}</span>`;
-    const last = S.raceNo >= SEASON_LENGTH;
+    const last = S.raceNo >= S.len;
     const res = $("result");
     res.innerHTML = `<h2>${won ? "🎉 " : "😮 "}${head}</h2>${won ? `<div class="line">+${L0} ⭐</div>` : ""}
       <div class="line">${detail}</div>${move}<br>
@@ -640,7 +677,7 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SPO
     $("end").innerHTML = `<div class="trophy popin">${trophy}</div>
       <h2>Season over!</h2>
       <div style="font-size:20px">You reached <b>Level ${S.peak} · ${LEVELS[S.peak].name}</b>${S.peak > prev ? " (a new best!)" : ""}</div>
-      <div class="stats"><div class="stat"><b>${S.wins}/${SEASON_LENGTH}</b>races won</div>
+      <div class="stats"><div class="stat"><b>${S.wins}/${S.len}</b>races won</div>
         <div class="stat"><b>⭐ ${S.stars}</b>stars</div><div class="stat"><b>${L}</b>finishing level</div></div>
       <div class="row"><button class="btn go" id="again">Play again</button><button class="btn alt" id="other">Pick a sport</button></div>`;
     show("end");
