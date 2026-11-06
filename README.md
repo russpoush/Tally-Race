@@ -17,7 +17,7 @@ Run `python3 build.py` after any change.
 
 ## Checks
 - An independent fact-check compared every value to the source leaderboards and found 0 mismatches.
-  - The NFL passing list was checked against a mirror (Wikipedia); Pro-Football-Reference wouldn't load for the checker.
+  - NFL passing yards and Tomlinson's rushing total were then matched to Pro-Football-Reference's own leaderboard pages (current and "through 2015/2019/2020" pages, for players whose careers had ended). PFR blocks automated page loads, so this used its text from search results.
 - `test.js` runs 200 races for every sport and level and checks:
   - no ties;
   - the right racer count;
