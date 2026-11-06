@@ -334,7 +334,7 @@
     renderHud();
     const b = race.board;
     $("question").textContent = race.spec.podium ? `Call the finish! Rank them by ${b.stat}.` : b.question;
-    $("kid").textContent = `${b.league} · ${b.kid}`;
+    $("kid").textContent = `${b.league} · regular season`;
     $("instruct").textContent = race.spec.podium ? "Tap them in order: who finishes 1st, 2nd, 3rd…" : "Tap your champ!";
     const picks = $("picks"); picks.className = "picks n" + race.racers.length; picks.innerHTML = "";
     race.racers.forEach((r, i) => {

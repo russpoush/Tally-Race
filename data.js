@@ -5,7 +5,6 @@ const BOARDS = [
     id: "mlb_hr", sport: "baseball", league: "MLB",
     stat: "career home runs", unit: "HR",
     question: "Who hit more career home runs?",
-    kid: "A home run is when the batter hits the ball and makes it all the way around the bases, usually by smashing it over the fence!",
     source: "Baseball-Reference.com", url: "https://www.baseball-reference.com/leaders/HR_career.shtml",
     players: [
       ["Barry Bonds",762],["Hank Aaron",755],["Babe Ruth",714],["Albert Pujols",703],["Alex Rodriguez",696],
@@ -26,7 +25,6 @@ const BOARDS = [
     id: "mlb_h", sport: "baseball", league: "MLB",
     stat: "career hits", unit: "hits",
     question: "Who got more career hits?",
-    kid: "A hit is when the batter smacks the ball and safely reaches base because of it.",
     source: "Baseball-Reference.com", url: "https://www.baseball-reference.com/leaders/H_career.shtml",
     players: [
       ["Pete Rose",4256],["Ty Cobb",4189],["Hank Aaron",3771],["Stan Musial",3630],["Tris Speaker",3514],
@@ -45,7 +43,6 @@ const BOARDS = [
     id: "nba_pts", sport: "basketball", league: "NBA & ABA",
     stat: "career points", unit: "pts",
     question: "Who scored more career points?",
-    kid: "Every basket is worth 2 or 3 points, and free throws are worth 1.",
     source: "Basketball-Reference.com", url: "https://www.basketball-reference.com/leaders/pts_career.html",
     players: [
       ["Kareem Abdul-Jabbar",38387],["Karl Malone",36928],["Kobe Bryant",33643],["Michael Jordan",32292],["Dirk Nowitzki",31560],
@@ -64,7 +61,6 @@ const BOARDS = [
     id: "nba_trb", sport: "basketball", league: "NBA & ABA",
     stat: "career rebounds", unit: "reb",
     question: "Who grabbed more career rebounds?",
-    kid: "A rebound is grabbing the ball after somebody misses a shot.",
     source: "Basketball-Reference.com", url: "https://www.basketball-reference.com/leaders/trb_career_c.html",
     players: [
       ["Wilt Chamberlain",23924],["Bill Russell",21620],["Moses Malone",17834],["Kareem Abdul-Jabbar",17440],["Artis Gilmore",16330],
@@ -81,7 +77,6 @@ const BOARDS = [
     id: "nfl_pass", sport: "football", league: "NFL",
     stat: "career passing yards", unit: "yds",
     question: "Who threw for more career passing yards?",
-    kid: "Passing yards add up how far the ball went on every catch from his throws.",
     source: "Pro-Football-Reference.com", url: "https://www.pro-football-reference.com/leaders/pass_yds_career.htm",
     players: [
       ["Tom Brady",89214],["Drew Brees",80358],["Peyton Manning",71940],["Brett Favre",71838],["Ben Roethlisberger",64088],
@@ -97,7 +92,6 @@ const BOARDS = [
     id: "nfl_rush", sport: "football", league: "NFL",
     stat: "career rushing yards", unit: "yds",
     question: "Who ran for more career rushing yards?",
-    kid: "Rushing yards are how far a player carried the ball by running with it.",
     source: "Pro-Football-Reference.com", url: "https://www.pro-football-reference.com/leaders/rush_yds_career.htm",
     players: [
       ["Emmitt Smith",18355],["Walter Payton",16726],["Barry Sanders",15269],["Curtis Martin",14101],["LaDainian Tomlinson",13684],
@@ -112,7 +106,6 @@ const BOARDS = [
     id: "nhl_g", sport: "hockey", league: "NHL",
     stat: "career goals", unit: "goals",
     question: "Who scored more career goals?",
-    kid: "A goal is when the puck goes into the net.",
     source: "Hockey-Reference.com", url: "https://www.hockey-reference.com/leaders/goals_career.html",
     players: [
       ["Wayne Gretzky",894],["Gordie Howe",801],["Jaromír Jágr",766],["Brett Hull",741],["Marcel Dionne",731],
@@ -129,7 +122,6 @@ const BOARDS = [
     id: "nhl_pts", sport: "hockey", league: "NHL",
     stat: "career points", unit: "pts",
     question: "Who got more career points?",
-    kid: "In hockey you get a point for scoring a goal OR for helping set one up.",
     source: "Hockey-Reference.com", url: "https://www.hockey-reference.com/leaders/points_career.html",
     players: [
       ["Wayne Gretzky",2857],["Jaromír Jágr",1921],["Mark Messier",1887],["Gordie Howe",1850],["Ron Francis",1798],
