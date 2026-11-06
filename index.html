@@ -71,7 +71,17 @@
   .pick:disabled{cursor:default}
 
   .track{position:relative;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);padding:10px 0;margin-bottom:12px}
-  .track.baseball{background:repeating-linear-gradient(90deg,#3fa34d 0 40px,#379646 40px 80px)}
+  .track.baseball{background:
+      repeating-linear-gradient(45deg,rgba(255,255,255,.07) 0 24px,transparent 24px 48px),
+      repeating-linear-gradient(-45deg,rgba(0,0,0,.07) 0 24px,transparent 24px 48px),#3a9a48;padding-right:22px}
+  .track.baseball::after{content:"";position:absolute;top:0;bottom:0;right:0;width:22px;z-index:4;
+      background:linear-gradient(90deg,#b98150 0 8px,#f2c230 8px 10px,#1d5a2b 10px)}
+  .track.baseball .lane{background:linear-gradient(transparent 31px,#c98e57 31px,#bd8049 53px,transparent 53px)}
+  .track.baseball .lane+.lane{border-top:2px solid rgba(255,255,255,.75)}
+  .plate{position:absolute;left:4px;top:33px;width:16px;height:18px;z-index:2;background:#fff;
+      clip-path:polygon(0 0,60% 0,100% 50%,60% 100%,0 100%);box-shadow:0 0 0 1px #8a6a4a}
+  .base{position:absolute;top:36px;width:12px;height:12px;background:#fff;transform:rotate(45deg);z-index:2;
+      box-shadow:0 1px 0 rgba(0,0,0,.3)}
   .track.basketball{background:repeating-linear-gradient(0deg,#e9b97a 0 14px,#deaa68 14px 28px)}
   .track.football{background:#2f8f3e}
   .track.hockey{background:linear-gradient(#f4fbff,#dff1fb)}
@@ -628,6 +638,13 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SEA
       return { lane, runner: lane.querySelector(".runner"), ball: lane.querySelector(".ball"), count: lane.querySelector(".count"), trail: lane.querySelector(".trail"), v: r.value };
     });
     track.classList.remove("hidden");
+    if (sport === "baseball") {                 // basepaths: home plate, then 1st/2nd/3rd base along each lane
+      const w = lanes[0].lane.clientWidth - 130;
+      lanes.forEach(L => {
+        L.lane.insertAdjacentHTML("afterbegin", `<div class="plate"></div>` +
+          [0.25, 0.5, 0.75].map(f => `<div class="base" style="left:${Math.round(17 + f * w)}px"></div>`).join(""));
+      });
+    }
     track.scrollIntoView({ behavior: "smooth", block: "center" });
 
     const vmax = Math.max(...race.racers.map(r => r.value));
