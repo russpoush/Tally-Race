@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stat Sprint</title>
+<title>Tally Race</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -135,7 +135,7 @@
 <canvas id="fx"></canvas>
 <div class="wrap">
   <header>
-    <div class="logo" id="home-link"><span class="bolt">STAT</span> SPRINT</div>
+    <div class="logo" id="home-link"><span class="bolt">TALLY</span> RACE</div>
     <div class="spacer"></div>
     <button class="iconbtn" id="mute" aria-label="Sound on or off">🔊</button>
   </header>
@@ -177,7 +177,7 @@
 </div>
 
 <script>
-// Stat Sprint data — copied from Sports Reference career leaderboards (pulled Nov 5, 2026).
+// Tally Race data — copied from Sports Reference career leaderboards (pulled Nov 5, 2026).
 // Only retired players, so totals never change. Format: [name, value].
 const BOARDS = [
   {
@@ -326,7 +326,7 @@ if (typeof module !== "undefined") module.exports = { BOARDS };
 
 </script>
 <script>
-// Stat Sprint engine: adaptive race generator. Pure logic, no DOM.
+// Tally Race engine: adaptive race generator. Pure logic, no DOM.
 // Level table: racers, min/max gap between 1st and 2nd (as fraction of winner's total),
 // whether a "legend" (top-10 player) must be in the race, and podium mode (call the full order).
 const LEVELS = {
@@ -448,8 +448,8 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SEA
     mix:        { label: "Mix it up!", sub: "a different sport every race" }
   };
   const store = {
-    get(k, d) { try { const v = localStorage.getItem("statsprint." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem("statsprint." + k, JSON.stringify(v)); } catch (e) {} }
+    get(k, d) { try { const v = localStorage.getItem("tallyrace." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem("tallyrace." + k, JSON.stringify(v)); } catch (e) {} }
   };
 
   // ---------- sound ----------

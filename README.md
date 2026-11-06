@@ -1,4 +1,4 @@
-# Stat Sprint
+# Tally Race
 
 A sports stats game for any age. Pick the player you think has the bigger career number, then watch them race: each racer travels exactly as far as his real career total from Sports Reference.
 
@@ -24,6 +24,6 @@ Run `python3 build.py` after any change.
   - the gaps stay inside each level's range;
   - the judging is correct;
   - the level climbs and drops as intended.
-- Originality: picking which player has the higher stat is an existing genre (MLB Matchups, Factle). The racing reveal and the adaptive rating are the new parts. Verdict: a twist on existing games. "Stat Sprint" is a test name; domains and trademarks haven't been checked.
+- Originality: picking which player has the higher stat is an existing genre (MLB Matchups, Factle). The racing reveal and the adaptive rating are the new parts. Verdict: a twist on existing games. "Tally Race" is a test name; domains and trademarks haven't been checked.
 
 Stats courtesy of [Sports Reference](https://www.sports-reference.com). This game is not affiliated with Sports Reference.

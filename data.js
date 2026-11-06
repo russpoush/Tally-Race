@@ -1,4 +1,4 @@
-// Stat Sprint data — copied from Sports Reference career leaderboards (pulled Nov 5, 2026).
+// Tally Race data — copied from Sports Reference career leaderboards (pulled Nov 5, 2026).
 // Only retired players, so totals never change. Format: [name, value].
 const BOARDS = [
   {

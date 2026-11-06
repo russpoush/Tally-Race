@@ -20,5 +20,10 @@ for f in root.rglob("*"):
         for i, line in enumerate(lines, 1):
             for n in names:
                 if n.lower() in line.lower(): hits.append(f"{f.relative_to(root)}:{i}: {n}")
+# Visible text of the built page, with tags stripped, so split names like <b>X</b> Y are caught too
+import html as _h
+visible = re.sub(r"\s+", " ", _h.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?s)<(script|style)[^>]*>.*?</\1>", " ", out))))
+for n in names:
+    if re.search(r"\s*".join(map(re.escape, n.split())), visible, re.I): hits.append(f"index.html (visible text): {n}")
 if hits: sys.exit("retired names found:\n" + "\n".join(hits))
 print(f"retired-name scan: {len(names)} names, 0 hits")

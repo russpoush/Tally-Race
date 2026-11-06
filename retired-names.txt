@@ -1,2 +1,5 @@
-# Old or rejected game names. build.py fails if any appears outside archive/.
-# (none yet: Stat Sprint is the first and only name this game has used)
+# Old or rejected game names. build.py fails if any appears outside archive/
+# (in files, and in the built page's visible text with tags removed).
+Stat Sprint
+StatSprint
+statsprint

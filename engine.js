@@ -1,4 +1,4 @@
-// Stat Sprint engine: adaptive race generator. Pure logic, no DOM.
+// Tally Race engine: adaptive race generator. Pure logic, no DOM.
 // Level table: racers, min/max gap between 1st and 2nd (as fraction of winner's total),
 // whether a "legend" (top-10 player) must be in the race, and podium mode (call the full order).
 const LEVELS = {
