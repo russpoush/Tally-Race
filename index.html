@@ -46,19 +46,8 @@
   .how b{color:var(--pop)}
 
   /* Balls (pure CSS) */
-  .ball{width:44px;height:44px;border-radius:50%;position:relative;flex:none}
-  .ball.baseball{background:#fff;border:2px solid #ddd}
-  .ball.baseball::before,.ball.baseball::after{content:"";position:absolute;top:6%;bottom:6%;width:40%;border:2px dashed #e0353b;border-radius:50%}
-  .ball.baseball::before{left:-18%;border-left-color:transparent;border-top-color:transparent;border-bottom-color:transparent}
-  .ball.baseball::after{right:-18%;border-right-color:transparent;border-top-color:transparent;border-bottom-color:transparent}
-  .ball.basketball{background:radial-gradient(circle at 35% 30%,#ffa04d,#e8650e);border:2px solid #7a2e00}
-  .ball.basketball::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid #7a2e00}
-  .ball.basketball::after{content:"";position:absolute;top:50%;left:0;right:0;border-top:2px solid #7a2e00}
-  .ball.football{border-radius:50%/50%;width:52px;height:32px;background:radial-gradient(circle at 40% 35%,#b1682e,#7b3f13);border:2px solid #4b2207}
-  .ball.football::before{content:"";position:absolute;left:30%;right:30%;top:50%;border-top:2px solid #fff}
-  .ball.football::after{content:"";position:absolute;left:44%;width:12%;top:38%;height:24%;border-left:2px solid #fff;border-right:2px solid #fff}
-  .ball.hockey{border-radius:50%;width:44px;height:22px;background:linear-gradient(#333,#0c0c0c);border:2px solid #000;margin:11px 0}
-  .ball.mixball{background:conic-gradient(var(--pop),var(--sun),var(--mint),var(--sky),var(--grape),var(--pop));border:2px solid #fff}
+  .ball{width:60px;height:60px;flex:none;display:inline-flex;align-items:center;justify-content:center}
+  .ball svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
 
   /* Game */
   .hud{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
@@ -95,9 +84,7 @@
   .lname{position:absolute;left:4px;top:2px;font-weight:800;font-size:15px;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35);z-index:2;white-space:nowrap}
   .track.hockey .lname{color:var(--ink);text-shadow:none}
   .runner{position:absolute;left:0;top:22px;will-change:transform;display:flex;align-items:center;gap:6px;z-index:3}
-  .runner .ball{width:34px;height:34px}
-  .runner .ball.football{width:42px;height:26px}
-  .runner .ball.hockey{width:36px;height:18px;margin:8px 0}
+  .runner .ball{width:40px;height:40px}
   .count{background:var(--card);border-radius:10px;padding:0 8px;font-weight:800;font-size:18px;min-width:56px;text-align:center;border:3px solid var(--ink)}
   .crown{position:absolute;top:-22px;left:2px;font-size:22px;opacity:0;transition:opacity .3s}
   .runner.win .crown{opacity:1}
@@ -447,6 +434,50 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SEA
     hockey:     { label: "Hockey",     sub: "goals & points" },
     mix:        { label: "Mix it up!", sub: "a different sport every race" }
   };
+  // Hand-drawn SVG balls (viewBox 64x64).
+  const BALL_ART = {
+    baseball: `<defs><radialGradient id="g-bb" cx="36%" cy="30%" r="75%"><stop offset="0" stop-color="#ffffff"/><stop offset=".65" stop-color="#f3eee4"/><stop offset="1" stop-color="#c9bfae"/></radialGradient></defs>
+      <circle cx="32" cy="32" r="28" fill="url(#g-bb)" stroke="#b3a893" stroke-width="1.2"/>
+      <path d="M15 10 C25 21 25 43 15 54" fill="none" stroke="#c8272d" stroke-width="1.6"/>
+      <path d="M15 10 C25 21 25 43 15 54" fill="none" stroke="#c8272d" stroke-width="6.5" stroke-dasharray="1.4 3.4"/>
+      <path d="M49 10 C39 21 39 43 49 54" fill="none" stroke="#c8272d" stroke-width="1.6"/>
+      <path d="M49 10 C39 21 39 43 49 54" fill="none" stroke="#c8272d" stroke-width="6.5" stroke-dasharray="1.4 3.4"/>
+      <ellipse cx="24" cy="19" rx="9" ry="5" fill="#fff" opacity=".55"/>`,
+    basketball: `<defs><radialGradient id="g-bk" cx="35%" cy="30%" r="78%"><stop offset="0" stop-color="#ffb066"/><stop offset=".55" stop-color="#ee7417"/><stop offset="1" stop-color="#b44808"/></radialGradient>
+      <pattern id="p-bk" width="3" height="3" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r=".55" fill="#000" opacity=".16"/></pattern></defs>
+      <circle cx="32" cy="32" r="28" fill="url(#g-bk)"/><circle cx="32" cy="32" r="28" fill="url(#p-bk)"/>
+      <g fill="none" stroke="#2b1405" stroke-width="2.2" stroke-linecap="round">
+        <path d="M32 4 V60"/><path d="M4 32 H60"/>
+        <path d="M13 11 C23 21 23 43 13 53"/><path d="M51 11 C41 21 41 43 51 53"/></g>
+      <circle cx="32" cy="32" r="28" fill="none" stroke="#7a3104" stroke-width="1.2"/>
+      <ellipse cx="22" cy="18" rx="8" ry="4.5" fill="#fff" opacity=".28"/>`,
+    football: `<defs><linearGradient id="g-fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8692f"/><stop offset=".5" stop-color="#8c4718"/><stop offset="1" stop-color="#5a2a0b"/></linearGradient></defs>
+      <g transform="rotate(-28 32 32)">
+        <path d="M3 32 C13 11 51 11 61 32 C51 53 13 53 3 32 Z" fill="url(#g-fb)" stroke="#3e1c06" stroke-width="1.4"/>
+        <path d="M13 21 C9.5 27 9.5 37 13 43" fill="none" stroke="#fff" stroke-width="2.6"/>
+        <path d="M51 21 C54.5 27 54.5 37 51 43" fill="none" stroke="#fff" stroke-width="2.6"/>
+        <path d="M22 28.5 H42" stroke="#f4efe6" stroke-width="2.2" stroke-linecap="round"/>
+        <g stroke="#f4efe6" stroke-width="2" stroke-linecap="round"><path d="M24.5 25.5 v6"/><path d="M28.5 25.5 v6"/><path d="M32 25.5 v6"/><path d="M35.5 25.5 v6"/><path d="M39.5 25.5 v6"/></g>
+        <ellipse cx="27" cy="20" rx="10" ry="2.6" fill="#fff" opacity=".18"/></g>`,
+    hockey: `<defs><linearGradient id="g-pk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4a4f"/><stop offset="1" stop-color="#121214"/></linearGradient></defs>
+      <path d="M5 27 V38 A27 9.5 0 0 0 59 38 V27 Z" fill="#0b0b0c"/>
+      <clipPath id="c-pk"><path d="M5 27 V38 A27 9.5 0 0 0 59 38 V27 Z"/></clipPath>
+      <path d="M5 33 A27 9.5 0 0 0 59 33" fill="none" stroke="#2c2c30" stroke-width="11" stroke-dasharray="0.9 2.6" clip-path="url(#c-pk)"/>
+      <path d="M5 38 A27 9.5 0 0 0 59 38" fill="none" stroke="#3b3b40" stroke-width="1"/>
+      <ellipse cx="32" cy="27" rx="27" ry="9.5" fill="url(#g-pk)" stroke="#000" stroke-width="1"/>
+      <ellipse cx="32" cy="27" rx="11" ry="3.6" fill="none" stroke="#6a6a70" stroke-width="1"/>
+      <ellipse cx="24" cy="24.5" rx="12" ry="2.6" fill="#fff" opacity=".14"/>`
+  };
+  let ballUid = 0;
+  // Give every copy its own gradient/clip ids: copies inside hidden screens would otherwise break visible ones.
+  const uniq = art => { const n = ++ballUid; return art.replace(/id="([\w-]+)"/g, `id="$1-${n}"`).replace(/url\(#([\w-]+)\)/g, `url(#$1-${n})`); };
+  function ballSVG(sport) {
+    if (sport === "mix") {
+      const q = (k, x, y) => `<g transform="translate(${x} ${y}) scale(.5)">${BALL_ART[k]}</g>`;
+      return `<svg viewBox="0 0 64 64">${uniq(q("baseball",0,0)+q("basketball",32,0)+q("football",0,32)+q("hockey",32,32))}</svg>`;
+    }
+    return `<svg viewBox="0 0 64 64" role="img" aria-label="${sport}">${uniq(BALL_ART[sport])}</svg>`;
+  }
   const store = {
     get(k, d) { try { const v = localStorage.getItem("tallyrace." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem("tallyrace." + k, JSON.stringify(v)); } catch (e) {} }
@@ -512,7 +543,7 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SEA
       const best = store.get("best." + s, 0);
       const b = document.createElement("button");
       b.className = "sport" + (s === "mix" ? " mix" : "");
-      b.innerHTML = `<span class="ball ${s === "mix" ? "mixball" : s}"></span>${SPORT_INFO[s].label}<small>${SPORT_INFO[s].sub}</small>` +
+      b.innerHTML = `<span class="ball">${ballSVG(s)}</span>${SPORT_INFO[s].label}<small>${SPORT_INFO[s].sub}</small>` +
         (best ? `<span class="best">Best: Level ${best} · ${LEVELS[best].name}</span>` : "");
       b.onclick = () => { audio(); tone(660); start(s); };
       el.appendChild(b);
@@ -592,7 +623,7 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SEA
     const lanes = race.racers.map((r, i) => {
       const lane = document.createElement("div"); lane.className = "lane";
       lane.innerHTML = `<div class="lname">${r.name}</div><div class="trail" style="background:${COLORS[i]}"></div>
-        <div class="runner"><span class="crown">👑</span><span class="ball ${sport}"></span><span class="count" style="border-color:${COLORS[i]}">0</span></div>`;
+        <div class="runner"><span class="crown">👑</span><span class="ball">${ballSVG(sport)}</span><span class="count" style="border-color:${COLORS[i]}">0</span></div>`;
       track.appendChild(lane);
       return { lane, runner: lane.querySelector(".runner"), ball: lane.querySelector(".ball"), count: lane.querySelector(".count"), trail: lane.querySelector(".trail"), v: r.value };
     });
@@ -620,7 +651,7 @@ if (typeof module !== "undefined") module.exports = { LEVELS, SEASON_LENGTH, SEA
         L.runner.style.transform = `translateX(${x}px)`;
         L.trail.style.width = (x + 17) + "px";
         L.count.textContent = fmt(Math.round(shown));
-        const spin = sport === "hockey" ? 0 : x * 3;
+        const spin = sport === "hockey" ? Math.sin(x / 9) * 4 : sport === "football" ? x * 1.6 : x * 3;
         const hop = sport === "basketball" ? -Math.abs(Math.sin(x / 18)) * 12 : 0;
         L.ball.style.transform = `translateY(${hop}px) rotate(${spin}deg)`;
       });
